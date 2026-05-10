@@ -1,4 +1,5 @@
 #include "CarPawn.h"
+#include "CarPawnConfig.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -11,6 +12,33 @@
 
 ACarPawn::ACarPawn()
 {
+	MouseLookSensitivity = CarPawnConfig::MouseLookSensitivity;
+	MinCameraPitch = CarPawnConfig::MinCameraPitch;
+	MaxCameraPitch = CarPawnConfig::MaxCameraPitch;
+	CameraPitch = CarPawnConfig::InitialCameraPitch;
+
+	AccelerationForce = CarPawnConfig::AccelerationForce;
+	SteeringTorque = CarPawnConfig::SteeringTorque;
+	LinearDamping = CarPawnConfig::LinearDamping;
+	AngularDamping = CarPawnConfig::AngularDamping;
+	CarMassKg = CarPawnConfig::CarMassKg;
+	LateralGrip = CarPawnConfig::LateralGrip;
+	MaxForwardSpeed = CarPawnConfig::MaxForwardSpeed;
+	SteeringInputInterpSpeed = CarPawnConfig::SteeringInputInterpSpeed;
+
+	ReverseAccelerationForce = CarPawnConfig::ReverseAccelerationForce;
+	BrakeForce = CarPawnConfig::BrakeForce;
+	CoastingDragForce = CarPawnConfig::CoastingDragForce;
+	MaxReverseSpeed = CarPawnConfig::MaxReverseSpeed;
+	AccelerationFalloffExponent = CarPawnConfig::AccelerationFalloffExponent;
+	MinAccelerationFactor = CarPawnConfig::MinAccelerationFactor;
+
+	bUseKeyboardFallback = CarPawnConfig::bUseKeyboardFallback;
+	bShowDebugInput = CarPawnConfig::bShowDebugInput;
+
+	HandbrakeBrakeForce = CarPawnConfig::HandbrakeBrakeForce;
+	HandbrakeLateralGrip = CarPawnConfig::HandbrakeLateralGrip;
+
 	// Can be updated every frame
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -116,6 +144,12 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &ACarPawn::Look);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Canceled, this, &ACarPawn::Look);
 	}
+	if (EnhancedInputComponent && HandbrakeAction)
+	{
+		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Triggered, this, &ACarPawn::Handbrake);
+		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &ACarPawn::Handbrake);
+		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Canceled, this, &ACarPawn::Handbrake);
+	}	
 }
 
 void ACarPawn::Move(const FInputActionValue& Value)
@@ -136,4 +170,9 @@ void ACarPawn::Look(const FInputActionValue& Value)
 	CameraPitch = FMath::Clamp(CameraPitch, MinCameraPitch, MaxCameraPitch);
 	
 	SpringArm->SetRelativeRotation(FRotator(CameraPitch, CameraYaw, 0.0f));
+}
+
+void ACarPawn::Handbrake(const FInputActionValue& Value)
+{
+	bHandbrakeActive = Value.Get<bool>();
 }

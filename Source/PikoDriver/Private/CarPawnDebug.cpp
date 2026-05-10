@@ -47,6 +47,11 @@ void ACarPawn::ShowDebugInput()
 	const float CurrentThrottleForce =
 		ThrottleInput * AccelerationForce;
 
+	const float EffectiveLateralGrip =
+		bHandbrakeActive
+		? HandbrakeLateralGrip
+		: LateralGrip;
+
 	// ---------------------------------------------------------------------
 	// INPUT
 	// ---------------------------------------------------------------------
@@ -56,10 +61,11 @@ void ACarPawn::ShowDebugInput()
 		0.0f,
 		FColor::Yellow,
 		FString::Printf(
-			TEXT("[Input] Throttle: %.2f | Steering Raw: %.2f | Steering Smooth: %.2f"),
+			TEXT("[Input] Throttle: %.2f | Steering Raw: %.2f | Steering Smooth: %.2f | Handbrake: %s"),
 			ThrottleInput,
 			SteeringInput,
-			MovementState.SmoothedSteeringInput
+			MovementState.SmoothedSteeringInput,
+			bHandbrakeActive ? TEXT("ON") : TEXT("off")
 		)
 	);
 
@@ -121,11 +127,27 @@ void ACarPawn::ShowDebugInput()
 	);
 
 	// ---------------------------------------------------------------------
-	// GRIP / SLIDING
+	// BRAKING
 	// ---------------------------------------------------------------------
 
 	GEngine->AddOnScreenDebugMessage(
 		6,
+		0.0f,
+		bHandbrakeActive ? FColor::Red : FColor::White,
+		FString::Printf(
+			TEXT("[Braking] Handbrake: %s | HandbrakeBrakeForce: %.0f | Effective Grip: %.2f"),
+			bHandbrakeActive ? TEXT("ACTIVE") : TEXT("inactive"),
+			HandbrakeBrakeForce,
+			EffectiveLateralGrip
+		)
+	);
+
+	// ---------------------------------------------------------------------
+	// GRIP / SLIDING
+	// ---------------------------------------------------------------------
+
+	GEngine->AddOnScreenDebugMessage(
+		7,
 		0.0f,
 		FColor::Orange,
 		FString::Printf(
@@ -143,7 +165,7 @@ void ACarPawn::ShowDebugInput()
 	// ---------------------------------------------------------------------
 
 	GEngine->AddOnScreenDebugMessage(
-		7,
+		8,
 		0.0f,
 		FColor::Silver,
 		FString::Printf(
@@ -155,7 +177,7 @@ void ACarPawn::ShowDebugInput()
 	);
 
 	GEngine->AddOnScreenDebugMessage(
-		8,
+		9,
 		0.0f,
 		FColor::Silver,
 		FString::Printf(

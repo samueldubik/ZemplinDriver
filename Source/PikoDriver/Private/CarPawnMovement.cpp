@@ -1,4 +1,3 @@
-
 #include "CarPawn.h"
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
@@ -12,17 +11,29 @@ void ACarPawn::ApplyDrivingForces(float DeltaTime)
 		return;
 	}
 	
-	const FCarMovementState	MovementState = GetMovementState();
+	// Update smoothed steering input
+	SmoothedSteeringInput = FMath::FInterpTo(
+		SmoothedSteeringInput,
+		SteeringInput,
+		DeltaTime,
+		SteeringInputInterpSpeed
+	);
 
-	const FVector ForceToApply =
-		MovementState.ForwardVector * ThrottleInput * AccelerationForce;
+	// Movement state getter
+	FCarMovementState MovementState = GetMovementState();
+
+	// Steering calculations
+	const FVector TorqueToApply = CalculateTorque(MovementState);
 
 
-	const FVector TorqueToApply = GetTorque(DeltaTime);
+	// Acceleration calculations
+	const FVector ForceToApply = CalculateAccelerationForce(MovementState);
 
+
+	// Apply forces and torque to the physics body
 	PhysicsBody->AddForce(ForceToApply);
 	PhysicsBody->AddTorqueInRadians(TorqueToApply);
-	ApplyLateralGrip(MovementState);
+	ApplyLateralGrip(MovementState, DeltaTime);
 }
 
 FCarMovementState ACarPawn::GetMovementState() const
@@ -73,24 +84,6 @@ FCarMovementState ACarPawn::GetMovementState() const
 	return State;
 }
 
-FVector ACarPawn::GetTorque(float DeltaTime)
-{
-	SmoothedSteeringInput = FMath::FInterpTo(
-		SmoothedSteeringInput,
-		SteeringInput,
-		DeltaTime,
-		SteeringInputInterpSpeed
-	);
-
-	FCarMovementState MovementState = GetMovementState();
-
-	MovementState.RawSteeringInput = SteeringInput;
-	MovementState.SmoothedSteeringInput = SmoothedSteeringInput;
-
-	return CalculateTorque(MovementState);
-
-}
-
 FVector ACarPawn::CalculateTorque(const FCarMovementState& MovementState) const
 {
 	float SteeringEfficiency = 1.0f;
@@ -101,43 +94,129 @@ FVector ACarPawn::CalculateTorque(const FCarMovementState& MovementState) const
 			SteeringEfficiencyCurve->GetFloatValue(MovementState.NormalizedSpeed);
 	}
 
+	const float ReverseSteeringSpeedThreshold = 10.0f;
+
+	const float SteeringDirectionMultiplier =
+		MovementState.ForwardSpeed < -ReverseSteeringSpeedThreshold
+		? -1.0f
+		: 1.0f;
+
 	return FVector(
 		0.0f,
 		0.0f,
-		MovementState.SmoothedSteeringInput * SteeringTorque * SteeringEfficiency
+		MovementState.SmoothedSteeringInput
+		* SteeringDirectionMultiplier
+		* SteeringTorque
+		* SteeringEfficiency
 	);
 }
 
-void ACarPawn::ApplyLateralGrip(const FCarMovementState& MovementState)
+FVector ACarPawn::CalculateAccelerationForce(const FCarMovementState& MovementState) const
 {
-	const UWorld* World = GetWorld();
-
-	if (!World)
+	if (bHandbrakeActive)
 	{
-		return;
+		const float HandbrakeSpeedThreshold = 10.0f;
+
+		if (FMath::Abs(MovementState.ForwardSpeed) <= HandbrakeSpeedThreshold)
+		{
+			return FVector::ZeroVector;
+		}
+
+		return
+			-MovementState.ForwardVector
+			* FMath::Sign(MovementState.ForwardSpeed)
+			* HandbrakeBrakeForce;
 	}
 
-	const float DeltaTime = World->GetDeltaSeconds();
+	const float InputDeadzone = 0.05f;
+	const float DirectionChangeSpeedThreshold = 50.0f;
 
-	FVector ForwardVector = MovementState.ForwardVector;
-	FVector RightVector = MovementState.RightVector;
+	if (FMath::Abs(ThrottleInput) <= InputDeadzone)
+	{
+		return FVector::ZeroVector;
+	}
 
-	ForwardVector.Z = 0.0f;
-	RightVector.Z = 0.0f;
+	const bool bWantsToMoveForward = ThrottleInput > 0.0f;
+	const bool bWantsToMoveBackward = ThrottleInput < 0.0f;
 
-	ForwardVector.Normalize();
-	RightVector.Normalize();
+	const bool bMovingForward = MovementState.ForwardSpeed > DirectionChangeSpeedThreshold;
+	const bool bMovingBackward = MovementState.ForwardSpeed < -DirectionChangeSpeedThreshold;
 
+	const bool bNeedsToBrakeBeforeForward =
+		bWantsToMoveForward && bMovingBackward;
+
+	const bool bNeedsToBrakeBeforeReverse =
+		bWantsToMoveBackward && bMovingForward;
+
+	if (bNeedsToBrakeBeforeForward || bNeedsToBrakeBeforeReverse)
+	{
+		return
+			-MovementState.ForwardVector
+			* FMath::Sign(MovementState.ForwardSpeed)
+			* BrakeForce
+			* FMath::Abs(ThrottleInput);
+	}
+
+	const float BaseAccelerationForce =
+		ThrottleInput >= 0.0f
+		? AccelerationForce
+		: ReverseAccelerationForce;
+
+	const float MaxDirectionalSpeed =
+		ThrottleInput >= 0.0f
+		? MaxForwardSpeed
+		: MaxReverseSpeed;
+
+	const float CurrentDirectionalSpeed =
+		ThrottleInput >= 0.0f
+		? FMath::Max(MovementState.ForwardSpeed, 0.0f)
+		: FMath::Max(-MovementState.ForwardSpeed, 0.0f);
+
+	const float NormalizedDirectionalSpeed = FMath::Clamp(
+		CurrentDirectionalSpeed / MaxDirectionalSpeed,
+		0.0f,
+		1.0f
+	);
+
+	float AccelerationMultiplier = 1.0f;
+
+	if (AccelerationForceCurve)
+	{
+		AccelerationMultiplier =
+			AccelerationForceCurve->GetFloatValue(NormalizedDirectionalSpeed);
+	}
+	else
+	{
+		AccelerationMultiplier = FMath::Lerp(
+			MinAccelerationFactor,
+			1.0f,
+			FMath::Pow(1.0f - NormalizedDirectionalSpeed, AccelerationFalloffExponent)
+		);
+	}
+
+	return
+		MovementState.ForwardVector
+		* ThrottleInput
+		* BaseAccelerationForce
+		* AccelerationMultiplier;
+}
+
+void ACarPawn::ApplyLateralGrip(const FCarMovementState& MovementState, const float DeltaTime)
+{
 	const FVector VerticalVelocity = FVector(0.0f, 0.0f, MovementState.Velocity.Z);
-	const FVector HorizontalVelocity = MovementState.Velocity - VerticalVelocity;
 
-	const float ForwardSpeed = FVector::DotProduct(HorizontalVelocity, ForwardVector);
-	const float SideSpeed = FVector::DotProduct(HorizontalVelocity, RightVector);
+	const FVector ForwardVelocity =
+		MovementState.ForwardVector * MovementState.ForwardSpeed;
 
-	const FVector ForwardVelocity = ForwardVector * ForwardSpeed;
-	const FVector SideVelocity = RightVector * SideSpeed;
+	const FVector SideVelocity =
+		MovementState.RightVector * MovementState.SideSpeed;
 
-	const float GripAlpha = FMath::Clamp(LateralGrip * DeltaTime, 0.0f, 1.0f);
+	const float EffectiveLateralGrip =
+		bHandbrakeActive
+		? HandbrakeLateralGrip
+		: LateralGrip;
+
+	const float GripAlpha = FMath::Clamp(EffectiveLateralGrip * DeltaTime, 0.0f, 1.0f);
 
 	const FVector CorrectedSideVelocity =
 		FMath::Lerp(SideVelocity, FVector::ZeroVector, GripAlpha);

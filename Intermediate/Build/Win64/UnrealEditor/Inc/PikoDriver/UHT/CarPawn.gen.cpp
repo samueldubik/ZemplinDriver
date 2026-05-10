@@ -163,11 +163,6 @@ struct Z_Construct_UClass_ACarPawn_Statics
 		{ "Category", "Driving" },
 		{ "ModuleRelativePath", "Public/CarPawn.h" },
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SteeringEfficiencyCurve_MetaData[] = {
-		{ "AllowPrivateAccess", "true" },
-		{ "Category", "Driving|Steering" },
-		{ "ModuleRelativePath", "Public/CarPawn.h" },
-	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxForwardSpeed_MetaData[] = {
 		{ "AllowPrivateAccess", "true" },
 		{ "Category", "Driving|Steering" },
@@ -176,6 +171,16 @@ struct Z_Construct_UClass_ACarPawn_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SteeringInputInterpSpeed_MetaData[] = {
 		{ "AllowPrivateAccess", "true" },
 		{ "Category", "Driving|Steering" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SteeringEfficiencyCurve_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Driving|Steering" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_AccelerationForceCurve_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Driving|Acceleration" },
 		{ "ModuleRelativePath", "Public/CarPawn.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ReverseAccelerationForce_MetaData[] = {
@@ -218,6 +223,26 @@ struct Z_Construct_UClass_ACarPawn_Statics
 		{ "Category", "Debug" },
 		{ "ModuleRelativePath", "Public/CarPawn.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HandbrakeAction_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Input" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bHandbrakeActive_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Input" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HandbrakeBrakeForce_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Driving|Braking" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HandbrakeLateralGrip_MetaData[] = {
+		{ "AllowPrivateAccess", "true" },
+		{ "Category", "Driving|Braking" },
+		{ "ModuleRelativePath", "Public/CarPawn.h" },
+	};
 #endif // WITH_METADATA
 
 // ********** Begin Class ACarPawn constinit property declarations *********************************
@@ -239,9 +264,10 @@ struct Z_Construct_UClass_ACarPawn_Statics
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_AngularDamping;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_CarMassKg;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_LateralGrip;
-	static const UECodeGen_Private::FObjectPropertyParams NewProp_SteeringEfficiencyCurve;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_MaxForwardSpeed;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_SteeringInputInterpSpeed;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_SteeringEfficiencyCurve;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_AccelerationForceCurve;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ReverseAccelerationForce;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_BrakeForce;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_CoastingDragForce;
@@ -252,6 +278,11 @@ struct Z_Construct_UClass_ACarPawn_Statics
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bUseKeyboardFallback;
 	static void NewProp_bShowDebugInput_SetBit(void* Obj);
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bShowDebugInput;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_HandbrakeAction;
+	static void NewProp_bHandbrakeActive_SetBit(void* Obj);
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bHandbrakeActive;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_HandbrakeBrakeForce;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_HandbrakeLateralGrip;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class ACarPawn constinit property declarations ***********************************
 	static UObject* (*const DependentSingletons[])();
@@ -280,9 +311,10 @@ const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Static
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_AngularDamping = { "AngularDamping", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, AngularDamping), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AngularDamping_MetaData), NewProp_AngularDamping_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_CarMassKg = { "CarMassKg", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, CarMassKg), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CarMassKg_MetaData), NewProp_CarMassKg_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_LateralGrip = { "LateralGrip", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, LateralGrip), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_LateralGrip_MetaData), NewProp_LateralGrip_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringEfficiencyCurve = { "SteeringEfficiencyCurve", nullptr, (EPropertyFlags)0x0144000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, SteeringEfficiencyCurve), Z_Construct_UClass_UCurveFloat_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SteeringEfficiencyCurve_MetaData), NewProp_SteeringEfficiencyCurve_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_MaxForwardSpeed = { "MaxForwardSpeed", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, MaxForwardSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxForwardSpeed_MetaData), NewProp_MaxForwardSpeed_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringInputInterpSpeed = { "SteeringInputInterpSpeed", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, SteeringInputInterpSpeed), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SteeringInputInterpSpeed_MetaData), NewProp_SteeringInputInterpSpeed_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringEfficiencyCurve = { "SteeringEfficiencyCurve", nullptr, (EPropertyFlags)0x0144000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, SteeringEfficiencyCurve), Z_Construct_UClass_UCurveFloat_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SteeringEfficiencyCurve_MetaData), NewProp_SteeringEfficiencyCurve_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_AccelerationForceCurve = { "AccelerationForceCurve", nullptr, (EPropertyFlags)0x0144000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, AccelerationForceCurve), Z_Construct_UClass_UCurveFloat_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_AccelerationForceCurve_MetaData), NewProp_AccelerationForceCurve_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_ReverseAccelerationForce = { "ReverseAccelerationForce", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, ReverseAccelerationForce), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ReverseAccelerationForce_MetaData), NewProp_ReverseAccelerationForce_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_BrakeForce = { "BrakeForce", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, BrakeForce), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_BrakeForce_MetaData), NewProp_BrakeForce_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_CoastingDragForce = { "CoastingDragForce", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, CoastingDragForce), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CoastingDragForce_MetaData), NewProp_CoastingDragForce_MetaData) };
@@ -299,6 +331,14 @@ void Z_Construct_UClass_ACarPawn_Statics::NewProp_bShowDebugInput_SetBit(void* O
 	((ACarPawn*)Obj)->bShowDebugInput = 1;
 }
 const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_bShowDebugInput = { "bShowDebugInput", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(ACarPawn), &Z_Construct_UClass_ACarPawn_Statics::NewProp_bShowDebugInput_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bShowDebugInput_MetaData), NewProp_bShowDebugInput_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeAction = { "HandbrakeAction", nullptr, (EPropertyFlags)0x0144000000000015, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, HandbrakeAction), Z_Construct_UClass_UInputAction_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HandbrakeAction_MetaData), NewProp_HandbrakeAction_MetaData) };
+void Z_Construct_UClass_ACarPawn_Statics::NewProp_bHandbrakeActive_SetBit(void* Obj)
+{
+	((ACarPawn*)Obj)->bHandbrakeActive = 1;
+}
+const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_bHandbrakeActive = { "bHandbrakeActive", nullptr, (EPropertyFlags)0x0040000000020015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(ACarPawn), &Z_Construct_UClass_ACarPawn_Statics::NewProp_bHandbrakeActive_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bHandbrakeActive_MetaData), NewProp_bHandbrakeActive_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeBrakeForce = { "HandbrakeBrakeForce", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, HandbrakeBrakeForce), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HandbrakeBrakeForce_MetaData), NewProp_HandbrakeBrakeForce_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeLateralGrip = { "HandbrakeLateralGrip", nullptr, (EPropertyFlags)0x0040000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(ACarPawn, HandbrakeLateralGrip), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HandbrakeLateralGrip_MetaData), NewProp_HandbrakeLateralGrip_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ACarPawn_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_LookAction,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_PhysicsBody,
@@ -318,9 +358,10 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ACarPawn_
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_AngularDamping,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_CarMassKg,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_LateralGrip,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringEfficiencyCurve,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_MaxForwardSpeed,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringInputInterpSpeed,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_SteeringEfficiencyCurve,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_AccelerationForceCurve,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_ReverseAccelerationForce,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_BrakeForce,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_CoastingDragForce,
@@ -329,6 +370,10 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ACarPawn_
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_MinAccelerationFactor,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_bUseKeyboardFallback,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_bShowDebugInput,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeAction,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_bHandbrakeActive,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeBrakeForce,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ACarPawn_Statics::NewProp_HandbrakeLateralGrip,
 };
 static_assert(UE_ARRAY_COUNT(Z_Construct_UClass_ACarPawn_Statics::PropPointers) < 2048);
 // ********** End Class ACarPawn Property Definitions **********************************************
@@ -371,10 +416,10 @@ ACarPawn::~ACarPawn() {}
 struct Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_Statics
 {
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_ACarPawn, ACarPawn::StaticClass, TEXT("ACarPawn"), &Z_Registration_Info_UClass_ACarPawn, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ACarPawn), 1548768540U) },
+		{ Z_Construct_UClass_ACarPawn, ACarPawn::StaticClass, TEXT("ACarPawn"), &Z_Registration_Info_UClass_ACarPawn, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ACarPawn), 3808709213U) },
 	};
 }; // Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_3239895841{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_3570200639{
 	TEXT("/Script/PikoDriver"),
 	Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_Users_samue_Documents_Unreal_Projects_PikoDriver_Source_PikoDriver_Public_CarPawn_h__Script_PikoDriver_Statics::ClassInfo),
 	nullptr, 0,
