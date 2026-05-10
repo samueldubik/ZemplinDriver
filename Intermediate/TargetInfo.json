@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "PikoDriver",
+			"Path": "..\\Source\\PikoDriver.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "PikoDriverEditor",
+			"Path": "..\\Source\\PikoDriverEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

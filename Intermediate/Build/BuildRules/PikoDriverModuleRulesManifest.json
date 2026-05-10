@@ -1,0 +1,10 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\samue\\Documents\\Unreal Projects\\PikoDriver\\Source\\PikoDriver\\PikoDriver.Build.cs",
+		"C:\\Users\\samue\\Documents\\Unreal Projects\\PikoDriver\\Plugins\\VisualStudioTools\\Source\\VisualStudioBlueprintDebuggerHelper\\VisualStudioBlueprintDebuggerHelper.Build.cs",
+		"C:\\Users\\samue\\Documents\\Unreal Projects\\PikoDriver\\Plugins\\VisualStudioTools\\Source\\VisualStudioTools\\VisualStudioTools.Build.cs",
+		"C:\\Users\\samue\\Documents\\Unreal Projects\\PikoDriver\\Source\\PikoDriver.Target.cs",
+		"C:\\Users\\samue\\Documents\\Unreal Projects\\PikoDriver\\Source\\PikoDriverEditor.Target.cs"
+	],
+	"EngineVersion": "5.7.2"
+}
