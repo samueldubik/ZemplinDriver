@@ -3,9 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "InputActionValue.h"
+#include "Interactable.h"
 #include "CarPawn.generated.h"
 
 // Forward declarations
+class APlayerController;
 class UBoxComponent;
 class UStaticMeshComponent;
 class USpringArmComponent;
@@ -13,6 +15,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UCurveFloat;
+class ABMWVisualAssembly;
 
 struct FCarMovementState
 {
@@ -32,13 +35,9 @@ struct FCarMovementState
 	float SmoothedSteeringInput = 0.0f;
 };
 
-// This is an unreal engine class
 UCLASS()
-
-
-class PIKODRIVER_API ACarPawn : public APawn
+class PIKODRIVER_API ACarPawn : public APawn, public IInteractable
 {
-	// Insert Unreal Engine's generated code for reflection and other features 
 	GENERATED_BODY()
 
 public:
@@ -47,6 +46,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	virtual bool CanInteract_Implementation(AActor* InteractingActor) const override;
+	virtual void Interact_Implementation(AActor* InteractingActor) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -54,6 +56,8 @@ protected:
 	TObjectPtr<UInputAction> LookAction;
 
 private:
+	ABMWVisualAssembly* BMWVisualAssemblyActor = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> PhysicsBody;
 
@@ -65,6 +69,21 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* LeftFrontWheelMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* RightFrontWheelMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* LeftRearWheelMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* RightRearWheelMesh;
+
+	float WheelSpinAngle = 0.0f;
+	float WheelSteerAngle = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;
@@ -158,10 +177,28 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Driving|Braking", meta = (AllowPrivateAccess = "true"))
 	float HandbrakeLateralGrip;
 
-private:		
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ExitAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<APawn> DriverPawn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	bool bExitPressed = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	bool bExitInputReleasedSincePossess = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	FVector ExitLocationOffset = FVector(0.0f, -150.0f, 40.0f);
+
+private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Handbrake(const FInputActionValue& Value);
+	void ExitVehicle(const FInputActionValue& Value);
+	void ApplyInputMappingContext(APlayerController* PlayerController) const;
+	void RemoveInputMappingContext(APlayerController* PlayerController) const;
 
 	void ShowDebugInput();
 
@@ -170,4 +207,7 @@ private:
 	void ApplyLateralGrip(const FCarMovementState& MovementState, const float DeltaTime);
 	FVector CalculateTorque(const FCarMovementState& MovementState) const;
 	FVector CalculateAccelerationForce(const FCarMovementState& MovementState) const;
+	void UpdateWheelVisuals(float DeltaTime);
+
+	FVector GetExitLocation() const;
 };
